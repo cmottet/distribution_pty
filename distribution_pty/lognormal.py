@@ -48,6 +48,20 @@ def lognorm_dcdf(x, d, loc=0, scale=1):
 
 
 def partial_expectation(x, loc=0, scale=1, lower=True):
+    """
+    Compute E[X I(X <= x)] when the r.v. X has a log-normal distribution
+
+    :param x: array_like
+        quantiles
+    :param loc:
+    :param scale: positive number
+        scale parameter (default=1)
+    :param lower: Boolean
+        If true, returns E[X I(X <= x)] and E[X I(X > x)] otherwise
+    :return:
+    :Example:
+    partial_expectation(1, 0,1)
+    """
     mean = exp(loc + scale**2/2)
     output = np.where(lower,
                       mean*norm.cdf((log(x) - loc)/scale - scale),
