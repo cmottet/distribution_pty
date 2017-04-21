@@ -1,4 +1,8 @@
-from scipy.stats import lognorm
+import numpy as np
+from scipy.stats import (lognorm, norm)
+
+from numpy import log
+
 
 def lognorm_dcdf(x, d, loc=0, scale=1):
     """ d^th derivative of the cumulative distribution function at x of the given RV.
@@ -25,12 +29,12 @@ def lognorm_dcdf(x, d, loc=0, scale=1):
         output = lognorm.pdf(x, loc=loc, s=scale)
 
     if d == 2:
-        output = np.where(x > 0, -1/(scale*x)**2*lognorm.pdf(log(x), loc=loc, s=scale)*((log(x) - loc) / scale + scale), 0)
+        output = np.where(x > 0, -1/(scale*x)**2*norm.pdf((log(x)-loc)/scale)*((log(x) - loc) / scale + scale), 0)
 
     if d == 3:
         def deriv3(x, scale):
             trans_x = (log(x) - loc) / scale + scale
-            return 1 / (x * scale) ** 3 * lognorm.pdf(log(x), loc=loc, s=scale) * (trans_x**2 + scale * trans_x - 1)
+            return 1 / (x * scale)**3*norm.pdf((log(x)-loc)/scale) * (trans_x**2 + scale * trans_x - 1)
 
         output = np.where(x > 0, deriv3(x, scale), 0)
 
