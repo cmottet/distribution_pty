@@ -1,7 +1,6 @@
 import numpy as np
 from scipy.stats import (lognorm, norm)
-
-from numpy import log
+from numpy import (log, exp)
 
 
 def lognorm_dcdf(x, d, loc=0, scale=1):
@@ -17,6 +16,9 @@ def lognorm_dcdf(x, d, loc=0, scale=1):
      If d = 0: the cumulative distribution function evaluated at x
      If d = 1: the probability density function evaluated at x
      If d => 2: the (d-1)-density derivative evaluated at x
+
+     :Examples:
+     lognorm.dcdf(1,1,0,2)
     """
     if d < 0 | (not isinstance(d, int)):
         print("d must be a non-negative integer.")
@@ -40,8 +42,19 @@ def lognorm_dcdf(x, d, loc=0, scale=1):
 
     if d > 3:
         print("Not available for this package version")
-        output = np.where(x > 0,numpy.repeat(float('nan'), x.__len__),0)
+        output = np.where(x > 0, np.repeat(float('nan'), x.__len__), 0)
 
     return output
 
+
+def partial_expectation(x, loc=0, scale=1, lower=True):
+    mean = exp(loc + scale**2/2)
+    output = np.where(lower,
+                      mean*norm.cdf((log(x) - loc)/scale - scale),
+                      mean*(1 - norm.cdf((log(x) - loc)/scale - scale))
+                      )
+    return output
+
+
 lognorm.dcdf = lognorm_dcdf
+lognorm.partial_expectation = partial_expectation
