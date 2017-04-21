@@ -1,17 +1,23 @@
 import numpy as np
-from scipy.stats import (lognorm, norm)
+from scipy.stats import norm
+from numpy import
 from numpy import (log, exp)
 
+#
+# !!!! Lognormal distribution parametrization python is not the smae as in R !!!!
+# Have to update this... Arf...
+#
+#
 
-def lognorm_dcdf(x, d, loc=0, scale=1):
+def lognorm_dcdf(x, d, s=1, loc=0):
     """ d^th derivative of the cumulative distribution function at x of the given RV.
 
     :param x:  array_like
         quantiles
     :param d: positive integer
         derivative order of the cumulative distribution function
-    :param scale: positive number
-        scale parameter (default=1)
+    :param s: positive number
+        s parameter (default=1)
     :return: array_like
      If d = 0: the cumulative distribution function evaluated at x
      If d = 1: the probability density function evaluated at x
@@ -25,20 +31,20 @@ def lognorm_dcdf(x, d, loc=0, scale=1):
         return float('nan')
 
     if d == 0:
-        output = lognorm.cdf(x, loc=loc, s=scale)
+        output = lognorm.cdf(x, loc=loc, s=s)
 
     if d == 1:
-        output = lognorm.pdf(x, loc=loc, s=scale)
+        output = lognorm.pdf(x, loc=loc, s=s)
 
     if d == 2:
-        output = np.where(x > 0, -1/(scale*x)**2*norm.pdf((log(x)-loc)/scale)*((log(x) - loc) / scale + scale), 0)
+        output = np.where(x > 0, -1/(s*x)**2*norm.pdf((log(x)-loc)/s)*((log(x) - loc) / s + s), 0)
 
     if d == 3:
-        def deriv3(x, scale):
-            trans_x = (log(x) - loc) / scale + scale
-            return 1 / (x * scale)**3*norm.pdf((log(x)-loc)/scale) * (trans_x**2 + scale * trans_x - 1)
+        def deriv3(x, s):
+            trans_x = (log(x) - loc) / s + s
+            return 1 / (x * s)**3*norm.pdf((log(x)-loc)/s) * (trans_x**2 + s * trans_x - 1)
 
-        output = np.where(x > 0, deriv3(x, scale), 0)
+        output = np.where(x > 0, deriv3(x, s), 0)
 
     if d > 3:
         print("Not available for this package version")
@@ -47,25 +53,25 @@ def lognorm_dcdf(x, d, loc=0, scale=1):
     return output
 
 
-def partial_expectation(x, loc=0, scale=1, lower=True):
+def partial_expectation(x, s=1, loc=0, lower=True):
     """
     Compute E[X I(X <= x)] when the r.v. X has a log-normal distribution
 
     :param x: array_like
         quantiles
     :param loc:
-    :param scale: positive number
-        scale parameter (default=1)
+    :param s: positive number
+        s parameter (default=1)
     :param lower: Boolean
         If true, returns E[X I(X <= x)] and E[X I(X > x)] otherwise
     :return:
     :Example:
     partial_expectation(1, 0,1)
     """
-    mean = exp(loc + scale**2/2)
+    mean = exp(loc + s**2/2)
     output = np.where(lower,
-                      mean*norm.cdf((log(x) - loc)/scale - scale),
-                      mean*(1 - norm.cdf((log(x) - loc)/scale - scale))
+                      mean*norm.cdf((log(x) - loc)/s - s),
+                      mean*(1 - norm.cdf((log(x) - loc)/s - s))
                       )
     return output
 
