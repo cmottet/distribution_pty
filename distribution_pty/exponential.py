@@ -1,9 +1,7 @@
-from scipy.stats import (expon, lognorm, genpareto, norm)
-import pandas as pd
-import numpy as np
-from numpy import (log, sqrt, prod)
+from scipy.stats import expon
 
-def expon_dpdf(x, d, scale=1):
+
+def expon_dcdf(x, d, scale=1):
     """ d^th derivative of the cumulative distribution function at x of the given RV.
 
     :param x:  array_like
@@ -30,4 +28,4 @@ def expon_dpdf(x, d, scale=1):
 
     return output
 
-expon.dpdf = expon_dpdf
+expon.dcdf = expon_dcdf

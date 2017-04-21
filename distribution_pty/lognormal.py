@@ -1,4 +1,6 @@
-def lognorm_dpdf(x, d, loc=0, scale=1):
+from scipy.stats import lognorm
+
+def lognorm_dcdf(x, d, loc=0, scale=1):
     """ d^th derivative of the cumulative distribution function at x of the given RV.
 
     :param x:  array_like
@@ -37,3 +39,5 @@ def lognorm_dpdf(x, d, loc=0, scale=1):
         output = np.where(x > 0,numpy.repeat(float('nan'), x.__len__),0)
 
     return output
+
+lognorm.dcdf = lognorm_dcdf
